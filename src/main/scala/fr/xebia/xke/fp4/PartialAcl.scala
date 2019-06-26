@@ -7,10 +7,13 @@ object PartialAcl {
   }
 
   def lift[Resource](acl: PartialAcl[Resource]): Acl[Resource] = {
-    ??? //TODO EXO7
+    val completeAcl : Resource => User => Boolean = (resource:Resource) => {
+      val restrictionAdmin = acl(resource).orElse(adminPassThrough)
+      restrictionAdmin.lift.andThen(_.getOrElse(false))
+    }
+    flip(completeAcl)
   }
 
-  private def flip[A, B, C](f: A => B => C): (B => A => C) =
-    ??? //TODO EXO7
+  private def flip[A, B, C](f: A => B => C): (B => A => C) = a => b => f(b)(a)
 
 }
